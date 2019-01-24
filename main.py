@@ -6,21 +6,21 @@ import sys
 import os
 import re
 from command import Command
-from utils import check_ffmpeg_installed
+import utils
 
 
 def main(args):
     file_format = re.compile(r'^\.\w+$')
 
     # ensure that the program ffmpeg is installed on the system
-    check_ffmpeg_installed()
+    utils.check_ffmpeg_installed()
 
     convert_dir = args.type == 'dir'
 
-    from_formats = args.from_formats
-    if not (len(from_formats) > 0 and \
-            all(file_format.match(f) is not None for f in from_formats)):
-        raise argparse.ArgumentTypeError('The from formats should be a . '
+    from_format = args.from_format
+    print(from_format)
+    if file_format.match(from_format) is None:
+        raise argparse.ArgumentTypeError('The from format should be a . '
                                          'followed by alphabetic characters, for example, '
                                          '.avi .mkv')
 
@@ -30,19 +30,22 @@ def main(args):
                                          '. followed by alphabetic characters, for example, '
                                          '.mp4')
 
-    dest = args.dest
+    target = args.target
     if convert_dir:
-        if not os.path.isdir(dest[0]):
-            raise argparse.ArgumentTypeError('\'{}\' is not a directory'.format(dest[0]))
+        if not os.path.isdir(target[0]):
+            raise argparse.ArgumentTypeError('\'{}\' is not a directory'.format(target[0]))
     else:
-        for f in dest:
+        for f in target:
             if not os.path.isfile(f):
                 raise argparse.ArgumentTypeError('\'{}\' is not a file'.format(f))
 
-    print('is_dir = {}'.format(convert_dir))
-    print('from_formats = {}'.format(from_formats))
-    print('to = {}'.format(to))
-    print('dest = {}'.format(dest))
+    delete_old = args.delete_old
+
+    if convert_dir:
+        utils.convert_directory(target, from_format, to, delete_original=delete_old)
+    else:
+        for f in target:
+            utils.convert_file(f, from_format, to, delete_original=delete_old)
 
 
 if __name__ == '__main__':
@@ -56,18 +59,18 @@ if __name__ == '__main__':
                         help='Whether you will be converting specific files or a '
                              ' directory of files')
 
-    parser.add_argument('from_formats', type=str, nargs='+', metavar='from',
-                        help='Formats that should be converted from, for example, '
+    parser.add_argument('from_format', type=str, metavar='from',
+                        help='Format that should be converted from, for example, '
                              '\'.avi\', \'.mkv\'')
 
     parser.add_argument('to', type=str,
                         help='Format the files should be converted to, for example, '
                              '\'.mp4\'')
 
-    parser.add_argument('dest', type=str, nargs='+',
+    parser.add_argument('target', type=str, nargs='+',
                         help='The files to be converted or the path to the directory where each '
                              'file in the directory and subdirectories will be converted.')
-    #
+
     parser.add_argument('--delete-old', '-d', action='store_true',
                         help='If this argument is given, the original files '
                              'will be deleted.')
