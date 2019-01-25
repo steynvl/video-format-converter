@@ -37,6 +37,5 @@ def convert_file(path: str, from_format: str, to: str, delete_original=False):
 def convert_directory(path: str, from_format: str, to: str, delete_original=False):
     for dirpath, _, files in os.walk(path):
         for f in filter(lambda f: f.endswith(from_format), files):
-            print('{}/{}'.format(dirpath, f))
             convert_file('{}/{}'.format(dirpath, f), from_format,
                          to, delete_original)
