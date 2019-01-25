@@ -27,4 +27,4 @@ Suppose in the directory `series`, you have a directory called `'The Office (US)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENCE](LICENCE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
