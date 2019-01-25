@@ -18,7 +18,6 @@ def main(args):
     convert_dir = args.type == 'dir'
 
     from_format = args.from_format
-    print(from_format)
     if file_format.match(from_format) is None:
         raise argparse.ArgumentTypeError('The from format should be a . '
                                          'followed by alphabetic characters, for example, '
@@ -41,8 +40,9 @@ def main(args):
 
     delete_old = args.delete_old
 
+    print('Converting files...')
     if convert_dir:
-        utils.convert_directory(target, from_format, to, delete_original=delete_old)
+        utils.convert_directory(target[0], from_format, to, delete_original=delete_old)
     else:
         for f in target:
             utils.convert_file(f, from_format, to, delete_original=delete_old)
